@@ -156,6 +156,77 @@ const QRCodeGenerator: React.FC = () => {
   const [promptpayAmount, setPromptpayAmount] = useState<string>('');
   const [promptpayIdType, setPromptpayIdType] = useState<'mobile' | 'citizen' | 'tax' | 'ewallet'>('mobile');
 
+  // Validation errors
+  // Validation errors (computed from current state)
+  const currentError = React.useMemo(() => {
+    let validationError = '';
+    
+    if (dataType === 'url') {
+      if (!content) validationError = 'กรุณากรอก URL';
+      else {
+        try {
+          new URL(content);
+        } catch {
+          validationError = 'URL ไม่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)';
+        }
+      }
+    } else if (dataType === 'text') {
+      if (!content) validationError = 'กรุณากรอกข้อความ';
+    } else if (dataType === 'phone') {
+      if (!content) validationError = 'กรุณากรอกเบอร์โทรศัพท์';
+      else {
+        const cleaned = content.replace(/[\s-]/g, '');
+        const phoneRegex = /^0\d{8,9}$/;
+        if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0 และมี 9-10 หลัก)';
+      }
+    } else if (dataType === 'email') {
+      if (!content) validationError = 'กรุณากรอกอีเมล';
+      else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(content)) validationError = 'รูปแบบอีเมลไม่ถูกต้อง';
+      }
+    } else if (dataType === 'wifi') {
+      if (!wifiSsid) validationError = 'กรุณากรอกชื่อ WiFi';
+      else if (wifiEncryption === 'WPA' && !wifiPassword) validationError = 'กรุณากรอกรหัสผ่าน WiFi';
+    } else if (dataType === 'sms' || dataType === 'whatsapp') {
+      if (!smsPhone) validationError = 'กรุณากรอกเบอร์โทรศัพท์';
+      else {
+        const cleaned = smsPhone.replace(/[\s-]/g, '');
+        const phoneRegex = /^0\d{8,9}$/;
+        if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0 และมี 9-10 หลัก)';
+        else if (!smsMessage) validationError = 'กรุณากรอกข้อความ';
+      }
+    } else if (dataType === 'vcard') {
+      if (!vcardData.firstName && !vcardData.lastName) validationError = 'กรุณากรอกชื่อหรือนามสกุลอย่างน้อย 1 ช่อง';
+      else if (vcardData.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(vcardData.email)) validationError = 'รูปแบบอีเมลไม่ถูกต้อง';
+      } else if (vcardData.website) {
+        try {
+          new URL(vcardData.website);
+        } catch {
+          validationError = 'รูปแบบเว็บไซต์ไม่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)';
+        }
+      }
+    } else if (dataType === 'promptpay') {
+      if (!promptpayId) validationError = 'กรุณากรอกข้อมูล';
+      else {
+        const cleaned = promptpayId.replace(/[\s-]/g, '');
+        if (promptpayIdType === 'mobile') {
+          const phoneRegex = /^0\d{9}$/;
+          if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ต้องขึ้นต้นด้วย 0 และมี 10 หลัก';
+        } else if (promptpayIdType === 'citizen') {
+          const citizenRegex = /^\d{13}$/;
+          if (!citizenRegex.test(cleaned)) validationError = 'เลขบัตรประชาชนต้องมี 13 หลัก';
+        } else if (promptpayIdType === 'ewallet') {
+          if (cleaned.length === 0) validationError = 'กรุณากรอก e-Wallet ID';
+        }
+      }
+    }
+    
+    return validationError;
+  }, [dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayIdType]);
+
   // Generate PromptPay QR String using promptparse library
   const generatePromptPayQR = useCallback((id: string, amount: string, idType: string): string => {
     try {
@@ -294,15 +365,18 @@ const QRCodeGenerator: React.FC = () => {
 
     let finalData = content || 'https://qr.mhalong.com';
     
-    // Construct data string based on type
-    if (dataType === 'phone') finalData = `tel:${content}`;
-    if (dataType === 'email') finalData = `mailto:${content}`;
-    if (dataType === 'wifi') finalData = `WIFI:T:${wifiEncryption};S:${wifiSsid};P:${wifiPassword};;`;
-    if (dataType === 'sms') finalData = `SMSTO:${smsPhone}:${smsMessage}`;
-    if (dataType === 'whatsapp') finalData = `https://wa.me/${smsPhone}?text=${encodeURIComponent(smsMessage)}`;
-    
-    if (dataType === 'vcard') {
-      finalData = `BEGIN:VCARD
+    // Construct data string based on type (only if no error)
+    if (!currentError) {
+      if (dataType === 'url') finalData = content;
+      if (dataType === 'text') finalData = content;
+      if (dataType === 'phone') finalData = `tel:${content}`;
+      if (dataType === 'email') finalData = `mailto:${content}`;
+      if (dataType === 'wifi') finalData = `WIFI:T:${wifiEncryption};S:${wifiSsid};P:${wifiPassword};;`;
+      if (dataType === 'sms') finalData = `SMSTO:${smsPhone}:${smsMessage}`;
+      if (dataType === 'whatsapp') finalData = `https://wa.me/${smsPhone}?text=${encodeURIComponent(smsMessage)}`;
+      
+      if (dataType === 'vcard') {
+        finalData = `BEGIN:VCARD
 VERSION:3.0
 N:${vcardData.lastName};${vcardData.firstName};;;
 FN:${vcardData.firstName} ${vcardData.lastName}
@@ -314,13 +388,10 @@ EMAIL:${vcardData.email}
 URL:${vcardData.website}
 ADR;TYPE=WORK:;;${vcardData.street};${vcardData.city};;${vcardData.country}
 END:VCARD`;
-    }
-    
-    if (dataType === 'promptpay') {
-      if (promptpayId) {
+      }
+      
+      if (dataType === 'promptpay' && promptpayId) {
         finalData = generatePromptPayQR(promptpayId, promptpayAmount, promptpayIdType);
-      } else {
-        finalData = 'https://qr.mhalong.com'; // Default if no ID provided
       }
     }
 
@@ -366,7 +437,7 @@ END:VCARD`;
       qrCodeInstance.current.update(options);
     }
 
-  }, [libLoaded, dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayAmount, promptpayIdType, qrColor, bgColor, isTransparent, dotStyle, cornerSquareStyle, cornerDotStyle, logoUrl, logoFile, logoUrlValid, generatePromptPayQR]);
+  }, [libLoaded, dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayAmount, promptpayIdType, qrColor, bgColor, isTransparent, dotStyle, cornerSquareStyle, cornerDotStyle, logoUrl, logoFile, logoUrlValid, generatePromptPayQR, currentError]);
 
   // --- Handlers ---
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -509,6 +580,16 @@ END:VCARD`;
                      <InputWrapper label="อีเมลปลายทาง" icon={Mail}>
                         <input type="email" value={content} onChange={(e) => setContent(e.target.value)} placeholder="hello@example.com" className={inputClass(true)} />
                      </InputWrapper>
+                  )}
+
+                  {/* Error Message */}
+                  {currentError && (
+                    <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <svg className="w-4 h-4 text-red-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs font-medium text-red-600">{currentError}</span>
+                    </div>
                   )}
 
                   {/* WiFi */}
