@@ -387,7 +387,7 @@ END:VCARD`;
         height: Number(size)
       });
       qrCodeInstance.current.download({
-        name: `my-qr-${dataType}`,
+        name: `qr-${dataType} from qr.mhalong.com`,
         extension: fileExt
       });
       qrCodeInstance.current.update({
