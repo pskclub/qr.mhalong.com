@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { anyId } from 'promptparse/generate';
 import { 
   Download, 
   Settings, 
@@ -23,6 +24,7 @@ import {
   MapPin,
   Building2,
   Globe,
+  Banknote,
   LucideIcon
 } from 'lucide-react';
 
@@ -41,7 +43,7 @@ interface VCardData {
   country: string;
 }
 
-type DataType = 'url' | 'text' | 'phone' | 'email' | 'wifi' | 'sms' | 'whatsapp' | 'vcard';
+type DataType = 'url' | 'text' | 'phone' | 'email' | 'wifi' | 'sms' | 'whatsapp' | 'vcard' | 'promptpay';
 type FileExtension = 'png' | 'jpeg' | 'svg';
 type DotStyle = 'rounded' | 'dots' | 'classy' | 'extra-rounded' | 'square' | 'classy-rounded';
 type CornerSquareStyle = 'extra-rounded' | 'square' | 'dot';
@@ -148,6 +150,47 @@ const QRCodeGenerator: React.FC = () => {
   const updateVcard = (field: keyof VCardData, value: string): void => {
     setVcardData(prev => ({ ...prev, [field]: value }));
   };
+
+  // PromptPay
+  const [promptpayId, setPromptpayId] = useState<string>('');
+  const [promptpayAmount, setPromptpayAmount] = useState<string>('');
+  const [promptpayIdType, setPromptpayIdType] = useState<'mobile' | 'citizen' | 'tax' | 'ewallet'>('mobile');
+
+  // Generate PromptPay QR String using promptparse library
+  const generatePromptPayQR = useCallback((id: string, amount: string, idType: string): string => {
+    try {
+      // Prepare the ID based on type
+      let formattedId = id.trim();
+      
+      // For mobile numbers, remove spaces and dashes
+      if (idType === 'mobile') {
+        formattedId = formattedId.replace(/[\s-]/g, '');
+      }
+      
+      // Map our idType to ProxyType
+      let proxyType: 'MSISDN' | 'NATID' | 'EWALLETID';
+      
+      if (idType === 'mobile') {
+        proxyType = 'MSISDN';
+      } else if (idType === 'citizen' || idType === 'tax') {
+        proxyType = 'NATID';
+      } else {
+        proxyType = 'EWALLETID';
+      }
+      
+      // Use promptparse library to generate PromptPay QR
+      const payload = anyId({
+        type: proxyType,
+        target: formattedId,
+        amount: amount && parseFloat(amount) > 0 ? parseFloat(amount) : undefined,
+      });
+      
+      return payload;
+    } catch (error) {
+      console.error('Error generating PromptPay QR:', error);
+      return 'https://qr.mhalong.com'; // Fallback
+    }
+  }, []);
 
   // --- State for Styles ---
   const [size, setSize] = useState<number>(1000);
@@ -272,6 +315,14 @@ URL:${vcardData.website}
 ADR;TYPE=WORK:;;${vcardData.street};${vcardData.city};;${vcardData.country}
 END:VCARD`;
     }
+    
+    if (dataType === 'promptpay') {
+      if (promptpayId) {
+        finalData = generatePromptPayQR(promptpayId, promptpayAmount, promptpayIdType);
+      } else {
+        finalData = 'https://qr.mhalong.com'; // Default if no ID provided
+      }
+    }
 
     const options: QRCodeStylingOptions = {
       width: 600,
@@ -315,7 +366,7 @@ END:VCARD`;
       qrCodeInstance.current.update(options);
     }
 
-  }, [libLoaded, dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, qrColor, bgColor, isTransparent, dotStyle, cornerSquareStyle, cornerDotStyle, logoUrl, logoFile, logoUrlValid]);
+  }, [libLoaded, dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayAmount, promptpayIdType, qrColor, bgColor, isTransparent, dotStyle, cornerSquareStyle, cornerDotStyle, logoUrl, logoFile, logoUrlValid, generatePromptPayQR]);
 
   // --- Handlers ---
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -412,7 +463,7 @@ END:VCARD`;
                     { id: 'email', icon: Mail, label: 'Email' },
                     { id: 'vcard', icon: Contact, label: 'vCard' },
                     { id: 'sms', icon: MessageSquare, label: 'SMS' },
-                    { id: 'whatsapp', icon: MessageCircle, label: 'WhatsApp' },
+                    { id: 'promptpay', icon: Banknote, label: 'PromptPay' },
                   ].map((t) => (
                     <button
                       key={t.id}
@@ -547,6 +598,64 @@ END:VCARD`;
                             <InputWrapper label="ประเทศ">
                                 <input type="text" value={vcardData.country} onChange={(e) => updateVcard('country', e.target.value)} placeholder="ประเทศไทย" className={inputClass(false)} />
                             </InputWrapper>
+                        </div>
+                    </div>
+                  )}
+
+                  {/* PromptPay */}
+                  {dataType === 'promptpay' && (
+                    <div className="space-y-4">
+                        <InputWrapper label="ประเภทบัญชี">
+                            <select 
+                              value={promptpayIdType} 
+                              onChange={(e) => setPromptpayIdType(e.target.value as 'mobile' | 'citizen' | 'tax' | 'ewallet')} 
+                              className={inputClass(false)}
+                            >
+                                <option value="mobile">เบอร์โทรศัพท์</option>
+                                <option value="citizen">เลขบัตรประชาชน</option>
+                                <option value="ewallet">e-Wallet ID</option>
+                            </select>
+                        </InputWrapper>
+                        <InputWrapper 
+                          label={
+                            promptpayIdType === 'mobile' ? 'เบอร์โทรศัพท์' :
+                            promptpayIdType === 'citizen' ? 'เลขบัตรประชาชน' :
+                            promptpayIdType === 'tax' ? 'เลขประจำตัวผู้เสียภาษี' :
+                            'e-Wallet ID'
+                          } 
+                          icon={promptpayIdType === 'mobile' ? Phone : Banknote}
+                        >
+                            <input 
+                              type="text" 
+                              value={promptpayId} 
+                              onChange={(e) => setPromptpayId(e.target.value)} 
+                              placeholder={
+                                promptpayIdType === 'mobile' ? '0812345678' :
+                                promptpayIdType === 'citizen' ? '1234567890123' :
+                                promptpayIdType === 'tax' ? '0123456789012' :
+                                'ewallet123'
+                              }
+                              className={inputClass(true)} 
+                            />
+                        </InputWrapper>
+                        <InputWrapper label="จำนวนเงิน (บาท) - ไม่ระบุก็ได้" icon={Banknote}>
+                            <input 
+                              type="number" 
+                              value={promptpayAmount} 
+                              onChange={(e) => setPromptpayAmount(e.target.value)} 
+                              placeholder="0.00" 
+                              step="0.01"
+                              min="0"
+                              className={inputClass(true)} 
+                            />
+                        </InputWrapper>
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                          <p className="text-xs text-blue-600 font-medium">
+                            💡 <strong>คำแนะนำ:</strong><br/>
+                            • เบอร์โทร: ใส่ 10 หลัก (เช่น 0812345678)<br/>
+                            • บัตรประชาชน/เลขผู้เสียภาษี: ใส่ 13 หลัก<br/>
+                            • ไม่ระบุจำนวนเงิน = ให้ผู้จ่ายกรอกเอง
+                          </p>
                         </div>
                     </div>
                   )}
