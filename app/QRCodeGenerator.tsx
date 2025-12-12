@@ -31,7 +31,7 @@ import {
   Facebook, Instagram, Twitter, Linkedin, Github, Youtube, Twitch, Slack, Dribbble, Figma, Gitlab, Chrome, // Social
   Smartphone, Home, User, Users, Building, // Contact variants
   Briefcase, Store, CreditCard, // Business
-  Star, Smile, Coffee, Music, PartyPopper, Zap, Crown, Bell, Gift, Trophy, ThumbsUp, Camera, Video, Image, Mic, Lock, Unlock, Key, // General
+  Star, Smile, Coffee, Music, PartyPopper, Zap, Crown, Bell, Gift, Trophy, ThumbsUp, Camera, Video, Mic, Lock, Unlock, Key, // General
   BadgeDollarSign, Wallet, QrCode, Coins, PiggyBank, Landmark, Receipt, DollarSign, Euro, PoundSterling, // Payment
   Utensils, Pizza, Beer, Wine, Cake, CupSoda, // Food
   Plane, Car, Bus, Train, Map, Navigation, // Travel
@@ -55,7 +55,7 @@ const PRESET_ICONS = {
       { icon: ThumbsUp, label: 'Like', color: '#3b82f6' },
       { icon: Camera, label: 'Camera', color: '#64748b' },
       { icon: Video, label: 'Video', color: '#ef4444' },
-      { icon: Image, label: 'Image', color: '#10b981' },
+      { icon: ImageIcon, label: 'Image', color: '#10b981' },
       { icon: Mic, label: 'Mic', color: '#f43f5e' },
       { icon: Lock, label: 'Lock', color: '#64748b' },
       { icon: Unlock, label: 'Unlock', color: '#10b981' },
