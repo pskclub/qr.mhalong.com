@@ -39,6 +39,29 @@ import {
 import { renderToStaticMarkup } from 'react-dom/server';
 
 const PRESET_ICONS = {
+  general: {
+    label: 'General',
+    icons: [
+      { icon: Heart, label: 'Love', color: '#ec4899' },
+      { icon: Star, label: 'Star', color: '#eab308' },
+      { icon: Sparkles, label: 'Sparkle', color: '#06b6d4' },
+      { icon: Music, label: 'Music', color: '#f43f5e' },
+      { icon: PartyPopper, label: 'Party', color: '#d946ef' },
+      { icon: Zap, label: 'Zap', color: '#eab308' },
+      { icon: Crown, label: 'Crown', color: '#f59e0b' },
+      { icon: Bell, label: 'Bell', color: '#eab308' },
+      { icon: Gift, label: 'Gift', color: '#ef4444' },
+      { icon: Trophy, label: 'Trophy', color: '#eab308' },
+      { icon: ThumbsUp, label: 'Like', color: '#3b82f6' },
+      { icon: Camera, label: 'Camera', color: '#64748b' },
+      { icon: Video, label: 'Video', color: '#ef4444' },
+      { icon: Image, label: 'Image', color: '#10b981' },
+      { icon: Mic, label: 'Mic', color: '#f43f5e' },
+      { icon: Lock, label: 'Lock', color: '#64748b' },
+      { icon: Unlock, label: 'Unlock', color: '#10b981' },
+      { icon: Key, label: 'Key', color: '#eab308' },
+    ]
+  },
   social: {
     label: 'Social',
     icons: [
@@ -119,29 +142,6 @@ const PRESET_ICONS = {
       { icon: Navigation, label: 'Nav', color: '#f59e0b' },
     ]
   },
-  general: {
-    label: 'General',
-    icons: [
-      { icon: Heart, label: 'Love', color: '#ec4899' },
-      { icon: Star, label: 'Star', color: '#eab308' },
-      { icon: Sparkles, label: 'Sparkle', color: '#06b6d4' },
-      { icon: Music, label: 'Music', color: '#f43f5e' },
-      { icon: PartyPopper, label: 'Party', color: '#d946ef' },
-      { icon: Zap, label: 'Zap', color: '#eab308' },
-      { icon: Crown, label: 'Crown', color: '#f59e0b' },
-      { icon: Bell, label: 'Bell', color: '#eab308' },
-      { icon: Gift, label: 'Gift', color: '#ef4444' },
-      { icon: Trophy, label: 'Trophy', color: '#eab308' },
-      { icon: ThumbsUp, label: 'Like', color: '#3b82f6' },
-      { icon: Camera, label: 'Camera', color: '#64748b' },
-      { icon: Video, label: 'Video', color: '#ef4444' },
-      { icon: Image, label: 'Image', color: '#10b981' },
-      { icon: Mic, label: 'Mic', color: '#f43f5e' },
-      { icon: Lock, label: 'Lock', color: '#64748b' },
-      { icon: Unlock, label: 'Unlock', color: '#10b981' },
-      { icon: Key, label: 'Key', color: '#eab308' },
-    ]
-  }
 };
 
 import { generateFramedCanvas, FrameType } from './utils/frameGenerator';
