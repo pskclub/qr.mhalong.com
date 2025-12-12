@@ -1,4 +1,5 @@
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
+import { del } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -49,4 +50,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       { status: 400 }, // The webhook will retry 5 times automatically if the status code is 500-599
     );
   }
+}
+
+export async function DELETE(request: Request) {
+  const { url } = await request.json();
+  await del(url);
+  return NextResponse.json({});
 }

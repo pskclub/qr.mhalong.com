@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, X, Trash2, FileText, RefreshCw } from 'lucide-react';
+import { Upload, X, Trash2, FileText, RefreshCw, AlertTriangle } from 'lucide-react';
 import { upload } from '@vercel/blob/client';
 
 interface FileFormProps {
@@ -15,6 +15,8 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
   const [fileUrl, setFileUrl] = useState<string>('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0) {
@@ -50,17 +52,47 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
     }
   };
 
-  const handleRemove = () => {
-    setFileName('');
-    setFileUrl('');
-    onUploadComplete('');
-    if (inputFileRef.current) {
-      inputFileRef.current.value = '';
+  const confirmDelete = async () => {
+    if (!fileUrl) return;
+    
+    setIsDeleting(true);
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: fileUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete file');
+      }
+
+      setFileName('');
+      setFileUrl('');
+      onUploadComplete('');
+      if (inputFileRef.current) {
+        inputFileRef.current.value = '';
+      }
+      setShowDeleteConfirm(false);
+    } catch (error) {
+      console.error(error);
+      alert('Failed to delete file');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleChange = () => {
-    if (inputFileRef.current) {
+  const handleRemoveClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleValuesChange = () => {
+     // If changing file, we might want to delete the old one first or just overwrite UI
+     // For now, let's keep it simple: UI replace, but maybe warn?
+     // Or just let user click input.
+     if (inputFileRef.current) {
       inputFileRef.current.click();
     }
   };
@@ -93,14 +125,14 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
       {/* Progress Bar */}
       {isUploading && (
         <div className="flex items-center gap-2">
-        <div className="w-full bg-slate-200 rounded-full h-2.5 mb-2">
-          <div 
-             className="bg-teal-500 h-2.5 rounded-full transition-all duration-300" 
-             style={{ width: `${uploadProgress}%` }}
-          ></div>
+            <div className="w-full bg-slate-200 rounded-full h-2.5">
+            <div 
+                className="bg-teal-500 h-2.5 rounded-full transition-all duration-300" 
+                style={{ width: `${uploadProgress}%` }}
+            ></div>
+            </div>
+            <p className="text-xs text-slate-500 whitespace-nowrap">{uploadProgress}%</p>
         </div>
-        <p className="text-xs text-slate-500 mt-1 text-right mb-3">{uploadProgress}%</p>
-      </div>
       )}
       
       {/* 
@@ -108,7 +140,33 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
         Show File Card with actions
       */}
       {fileName && !isUploading && (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3 relative overflow-hidden">
+             
+             {/* Delete Confirmation Overlay */}
+             {showDeleteConfirm && (
+                <div className="absolute inset-0 z-10 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center anim-fade-in">
+                    <AlertTriangle className="text-amber-500 mb-2" size={24} />
+                    <p className="text-sm font-semibold text-slate-800 mb-1">คุณแน่ใจว่าต้องการลบไฟล์นี้?</p>
+                    <p className="text-xs text-slate-500 mb-3">การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => setShowDeleteConfirm(false)}
+                            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50"
+                            disabled={isDeleting}
+                        >
+                            ยกเลิก
+                        </button>
+                        <button 
+                            onClick={confirmDelete}
+                            className="px-3 py-1.5 bg-red-500 border border-red-500 rounded-lg text-xs font-medium text-white hover:bg-red-600 flex items-center gap-1.5"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'กำลังลบ...' : 'ยืนยันลบ'}
+                        </button>
+                    </div>
+                </div>
+             )}
+
              <div className="p-2 bg-teal-100/50 rounded-lg text-teal-600 shrink-0">
                 <FileText size={24} />
              </div>
@@ -128,7 +186,7 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
                 
                 <div className="flex items-center gap-2 mt-3">
                    <button 
-                      onClick={handleChange}
+                      onClick={handleValuesChange}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-600 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-teal-600 transition-colors"
                    >
                       <RefreshCw size={14} />
@@ -136,7 +194,7 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
                    </button>
                    
                    <button 
-                      onClick={handleRemove}
+                      onClick={handleRemoveClick}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-red-500 text-xs font-medium border border-red-100 rounded-lg hover:bg-red-50 transition-colors"
                    >
                       <Trash2 size={14} />
@@ -144,11 +202,6 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
                    </button>
                 </div>
              </div>
-
-             {/* Hidden input for "Change" action to work if the main input is hidden/removed from DOM 
-                 Wait, if I remove the main input from DOM, I can't trigger it easily unless I keep it hidden or render it invisibly.
-                 Better to render it hidden.
-             */}
           </div>
       )}
 
