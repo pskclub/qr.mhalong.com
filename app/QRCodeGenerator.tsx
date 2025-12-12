@@ -417,7 +417,7 @@ END:VCARD`;
                     <button
                       key={t.id}
                       onClick={() => setDataType(t.id as DataType)}
-                      className={`flex flex-col items-center justify-center p-3 rounded-2xl text-[10px] font-bold transition-all duration-200 ${
+                      className={`flex flex-col items-center justify-center p-3 rounded-2xl text-[10px] font-bold transition-all duration-200 cursor-pointer ${
                         dataType === t.id 
                           // Updated Active State Gradient
                           ? 'bg-gradient-to-b from-teal-400 to-teal-500 text-white shadow-lg shadow-teal-200 transform scale-105' 
@@ -507,45 +507,45 @@ END:VCARD`;
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-3">
                             <InputWrapper label="ชื่อจริง">
-                                <input type="text" value={vcardData.firstName} onChange={(e) => updateVcard('firstName', e.target.value)} className={inputClass(false)} />
+                                <input type="text" value={vcardData.firstName} onChange={(e) => updateVcard('firstName', e.target.value)} placeholder="สมชาย" className={inputClass(false)} />
                             </InputWrapper>
                             <InputWrapper label="นามสกุล">
-                                <input type="text" value={vcardData.lastName} onChange={(e) => updateVcard('lastName', e.target.value)} className={inputClass(false)} />
+                                <input type="text" value={vcardData.lastName} onChange={(e) => updateVcard('lastName', e.target.value)} placeholder="ใจดี" className={inputClass(false)} />
                             </InputWrapper>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <InputWrapper label="มือถือ" icon={Phone}>
-                                <input type="tel" value={vcardData.mobile} onChange={(e) => updateVcard('mobile', e.target.value)} className={inputClass(true)} />
+                                <input type="tel" value={vcardData.mobile} onChange={(e) => updateVcard('mobile', e.target.value)} placeholder="081 234 5678" className={inputClass(true)} />
                             </InputWrapper>
                             <InputWrapper label="โทรศัพท์ (งาน)" icon={Phone}>
-                                <input type="tel" value={vcardData.phone} onChange={(e) => updateVcard('phone', e.target.value)} className={inputClass(true)} />
+                                <input type="tel" value={vcardData.phone} onChange={(e) => updateVcard('phone', e.target.value)} placeholder="02 123 4567" className={inputClass(true)} />
                             </InputWrapper>
                         </div>
                         <InputWrapper label="อีเมล" icon={Mail}>
-                            <input type="email" value={vcardData.email} onChange={(e) => updateVcard('email', e.target.value)} className={inputClass(true)} />
+                            <input type="email" value={vcardData.email} onChange={(e) => updateVcard('email', e.target.value)} placeholder="somchai@example.com" className={inputClass(true)} />
                         </InputWrapper>
                         <InputWrapper label="เว็บไซต์" icon={Globe}>
-                            <input type="url" value={vcardData.website} onChange={(e) => updateVcard('website', e.target.value)} className={inputClass(true)} />
+                            <input type="url" value={vcardData.website} onChange={(e) => updateVcard('website', e.target.value)} placeholder="https://example.com" className={inputClass(true)} />
                         </InputWrapper>
                          <div className="grid grid-cols-2 gap-3">
                             <InputWrapper label="บริษัท" icon={Building2}>
-                                <input type="text" value={vcardData.company} onChange={(e) => updateVcard('company', e.target.value)} className={inputClass(true)} />
+                                <input type="text" value={vcardData.company} onChange={(e) => updateVcard('company', e.target.value)} placeholder="บริษัท ABC จำกัด" className={inputClass(true)} />
                             </InputWrapper>
                             <InputWrapper label="ตำแหน่ง">
-                                <input type="text" value={vcardData.job} onChange={(e) => updateVcard('job', e.target.value)} className={inputClass(false)} />
+                                <input type="text" value={vcardData.job} onChange={(e) => updateVcard('job', e.target.value)} placeholder="ผู้จัดการ" className={inputClass(false)} />
                             </InputWrapper>
                         </div>
                          <div className="grid grid-cols-2 gap-3">
                             <div className="col-span-2">
                                 <InputWrapper label="ถนน/ซอย" icon={MapPin}>
-                                    <input type="text" value={vcardData.street} onChange={(e) => updateVcard('street', e.target.value)} className={inputClass(true)} />
+                                    <input type="text" value={vcardData.street} onChange={(e) => updateVcard('street', e.target.value)} placeholder="123 ถนนสุขุมวิท" className={inputClass(true)} />
                                 </InputWrapper>
                             </div>
                             <InputWrapper label="จังหวัด">
-                                <input type="text" value={vcardData.city} onChange={(e) => updateVcard('city', e.target.value)} className={inputClass(false)} />
+                                <input type="text" value={vcardData.city} onChange={(e) => updateVcard('city', e.target.value)} placeholder="กรุงเทพฯ" className={inputClass(false)} />
                             </InputWrapper>
                             <InputWrapper label="ประเทศ">
-                                <input type="text" value={vcardData.country} onChange={(e) => updateVcard('country', e.target.value)} className={inputClass(false)} />
+                                <input type="text" value={vcardData.country} onChange={(e) => updateVcard('country', e.target.value)} placeholder="ประเทศไทย" className={inputClass(false)} />
                             </InputWrapper>
                         </div>
                     </div>
@@ -582,9 +582,18 @@ END:VCARD`;
                       <div className="relative overflow-hidden w-10 h-10 rounded-full shadow-sm ring-2 ring-white">
                         <input type="color" value={bgColor} disabled={isTransparent} onChange={(e) => setBgColor(e.target.value)} className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
                       </div>
-                      <label className="flex items-center gap-1.5 cursor-pointer">
-                        <input type="checkbox" checked={isTransparent} onChange={(e) => setIsTransparent(e.target.checked)} className="w-4 h-4 rounded text-teal-500 focus:ring-teal-400 border-gray-300" />
-                        <span className="text-xs font-bold text-slate-500">ใสๆ</span>
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <div className="relative">
+                          <input 
+                            type="checkbox" 
+                            checked={isTransparent} 
+                            onChange={(e) => setIsTransparent(e.target.checked)} 
+                            className="peer sr-only" 
+                          />
+                          <div className="w-11 h-6 bg-slate-200 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-teal-400 peer-checked:to-emerald-400 transition-all duration-300 shadow-inner"></div>
+                          <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 peer-checked:translate-x-5 peer-checked:shadow-lg"></div>
+                        </div>
+                        <span className="text-xs font-bold text-slate-500 group-hover:text-teal-500 transition-colors">ใสๆ</span>
                       </label>
                     </div>
                   </div>
@@ -598,10 +607,10 @@ END:VCARD`;
                       <button
                         key={style}
                         onClick={() => setDotStyle(style as DotStyle)}
-                        className={`py-2 px-1 text-[10px] font-bold rounded-xl border-2 uppercase transition-all ${
+                        className={`py-2 px-1 text-[10px] font-bold rounded-xl border-2 uppercase transition-all cursor-pointer ${
                           dotStyle === style 
                           ? 'bg-teal-50 border-teal-400 text-teal-600' 
-                          : 'bg-white border-transparent text-slate-400 hover:bg-slate-50'
+                          : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:border-slate-300'
                         }`}
                       >
                         {style.replace('-', ' ')}
@@ -618,10 +627,10 @@ END:VCARD`;
                       <button
                         key={style}
                         onClick={() => setCornerSquareStyle(style)}
-                        className={`py-2 px-1 text-[10px] font-bold rounded-xl border-2 uppercase transition-all ${
+                        className={`py-2 px-1 text-[10px] font-bold rounded-xl border-2 uppercase transition-all cursor-pointer ${
                           cornerSquareStyle === style 
                           ? 'bg-teal-50 border-teal-400 text-teal-600' 
-                          : 'bg-white border-transparent text-slate-400 hover:bg-slate-50'
+                          : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:border-slate-300'
                         }`}
                       >
                         {style === 'extra-rounded' ? 'Extra Round' : style}
@@ -635,10 +644,10 @@ END:VCARD`;
                       <button
                         key={style}
                         onClick={() => setCornerDotStyle(style)}
-                        className={`py-2 px-1 text-[10px] font-bold rounded-xl border-2 uppercase transition-all ${
+                        className={`py-2 px-1 text-[10px] font-bold rounded-xl border-2 uppercase transition-all cursor-pointer ${
                           cornerDotStyle === style 
                           ? 'bg-teal-50 border-teal-400 text-teal-600' 
-                          : 'bg-white border-transparent text-slate-400 hover:bg-slate-50'
+                          : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:border-slate-300'
                         }`}
                       >
                         {style}
@@ -664,7 +673,7 @@ END:VCARD`;
                     <div className="flex bg-slate-50 p-1 rounded-xl mb-4">
                         <button
                             onClick={() => { setLogoInputType('upload'); setLogoUrl(''); }}
-                            className={`flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 ${
+                            className={`flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
                                 logoInputType === 'upload'
                                     ? 'bg-white text-orange-500 shadow-sm'
                                     : 'text-slate-400 hover:text-slate-600'
@@ -675,7 +684,7 @@ END:VCARD`;
                         </button>
                         <button
                             onClick={() => { setLogoInputType('url'); setLogoFile(null); }}
-                            className={`flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 ${
+                            className={`flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
                                 logoInputType === 'url'
                                     ? 'bg-white text-orange-500 shadow-sm'
                                     : 'text-slate-400 hover:text-slate-600'
@@ -718,7 +727,7 @@ END:VCARD`;
                             {logoFile && (
                                 <button 
                                     onClick={() => { setLogoFile(null); }} 
-                                    className="absolute top-2 right-2 p-1 bg-red-100 text-red-500 rounded-full hover:bg-red-200 z-20 shadow-sm"
+                                    className="absolute top-2 right-2 p-1 bg-red-100 text-red-500 rounded-full hover:bg-red-200 z-20 shadow-sm cursor-pointer"
                                     title="ลบโลโก้"
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -817,7 +826,7 @@ END:VCARD`;
                     <div className="flex-1 w-full space-y-4">
                         <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-100">
                              {['png', 'jpeg', 'svg'].map((ext) => (
-                                <button key={ext} onClick={() => setFileExt(ext as FileExtension)} className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all ${fileExt === ext ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
+                                <button key={ext} onClick={() => setFileExt(ext as FileExtension)} className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all cursor-pointer ${fileExt === ext ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
                                     {ext === 'jpeg' ? 'jpg' : ext}
                                 </button>
                              ))}
@@ -834,7 +843,7 @@ END:VCARD`;
                     <button 
                         onClick={handleDownload}
                         // Updated Button Gradient
-                        className="w-full sm:w-auto flex-shrink-0 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-teal-200 transform hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto shrink-0 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-teal-200 transform hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <Download size={20} />
                         <span>Download</span>
