@@ -176,8 +176,9 @@ const QRCodeGenerator: React.FC = () => {
       if (!content) validationError = 'กรุณากรอกเบอร์โทรศัพท์';
       else {
         const cleaned = content.replace(/[\s-]/g, '');
-        const phoneRegex = /^0\d{8,9}$/;
-        if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0 และมี 9-10 หลัก)';
+        // Accept any phone number with at least 7 digits (international format)
+        const phoneRegex = /^\+?\d{7,15}$/;
+        if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องมีอย่างน้อย 7 หลัก)';
       }
     } else if (dataType === 'email') {
       if (!content) validationError = 'กรุณากรอกอีเมล';
@@ -192,8 +193,9 @@ const QRCodeGenerator: React.FC = () => {
       if (!smsPhone) validationError = 'กรุณากรอกเบอร์โทรศัพท์';
       else {
         const cleaned = smsPhone.replace(/[\s-]/g, '');
-        const phoneRegex = /^0\d{8,9}$/;
-        if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0 และมี 9-10 หลัก)';
+        // Accept any phone number with at least 7 digits
+        const phoneRegex = /^\+?\d{7,15}$/;
+        if (!phoneRegex.test(cleaned)) validationError = 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องมีอย่างน้อย 7 หลัก)';
         else if (!smsMessage) validationError = 'กรุณากรอกข้อความ';
       }
     } else if (dataType === 'vcard') {
