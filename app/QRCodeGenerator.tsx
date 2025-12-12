@@ -27,8 +27,122 @@ import {
   Banknote,
   LucideIcon,
   Frame, // Import Frame icon
-  CaseLower // Import icon for text
+  CaseLower, // Import icon for text
+  Facebook, Instagram, Twitter, Linkedin, Github, Youtube, Twitch, Slack, Dribbble, Figma, Gitlab, Chrome, // Social
+  Smartphone, Home, User, Users, Building, // Contact variants
+  Briefcase, Store, CreditCard, // Business
+  Star, Smile, Coffee, Music, PartyPopper, Zap, Crown, Bell, Gift, Trophy, ThumbsUp, Camera, Video, Image, Mic, Lock, Unlock, Key, // General
+  BadgeDollarSign, Wallet, QrCode, Coins, PiggyBank, Landmark, Receipt, DollarSign, Euro, PoundSterling, // Payment
+  Utensils, Pizza, Beer, Wine, Cake, CupSoda, // Food
+  Plane, Car, Bus, Train, Map, Navigation, // Travel
 } from 'lucide-react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+const PRESET_ICONS = {
+  social: {
+    label: 'Social',
+    icons: [
+      { icon: Facebook, label: 'Facebook', color: '#1877F2' },
+      { icon: Instagram, label: 'Instagram', color: '#E4405F' },
+      { icon: Twitter, label: 'Twitter', color: '#1DA1F2' },
+      { icon: Linkedin, label: 'LinkedIn', color: '#0A66C2' },
+      { icon: Youtube, label: 'YouTube', color: '#FF0000' },
+      { icon: Github, label: 'GitHub', color: '#181717' },
+      { icon: Twitch, label: 'Twitch', color: '#9146FF' },
+      { icon: Slack, label: 'Slack', color: '#4A154B' },
+      { icon: Dribbble, label: 'Dribbble', color: '#EA4C89' },
+      { icon: Figma, label: 'Figma', color: '#F24E1E' },
+      { icon: Gitlab, label: 'GitLab', color: '#FC6D26' },
+      { icon: Chrome, label: 'Chrome', color: '#4285F4' },
+    ]
+  },
+  contact: {
+    label: 'Contact',
+    icons: [
+      { icon: Phone, label: 'Phone', color: '#22c55e' },
+      { icon: Mail, label: 'Email', color: '#f59e0b' },
+      { icon: MapPin, label: 'Location', color: '#ef4444' },
+      { icon: Globe, label: 'Website', color: '#3b82f6' },
+      { icon: Contact, label: 'Contact', color: '#8b5cf6' },
+      { icon: Home, label: 'Home', color: '#6366f1' },
+      { icon: User, label: 'User', color: '#ec4899' },
+      { icon: Users, label: 'Users', color: '#14b8a6' },
+      { icon: Building, label: 'Office', color: '#64748b' },
+      { icon: Smartphone, label: 'Mobile', color: '#0ea5e9' },
+    ]
+  },
+  business: {
+    label: 'Business',
+    icons: [
+      { icon: Briefcase, label: 'Work', color: '#334155' },
+      { icon: Store, label: 'Store', color: '#ea580c' },
+      { icon: Building2, label: 'Company', color: '#475569' },
+    ]
+  },
+  payment: {
+    label: 'Payment',
+    icons: [
+      { icon: Banknote, label: 'Cash', color: '#10b981' },
+      { icon: CreditCard, label: 'Card', color: '#f97316' },
+      { icon: Wallet, label: 'Wallet', color: '#a855f7' },
+      { icon: BadgeDollarSign, label: 'Dollar', color: '#14b8a6' },
+      { icon: QrCode, label: 'QR', color: '#64748b' },
+      { icon: Coins, label: 'Coins', color: '#eab308' },
+      { icon: PiggyBank, label: 'Savings', color: '#ec4899' },
+      { icon: Landmark, label: 'Bank', color: '#3b82f6' },
+      { icon: Receipt, label: 'Receipt', color: '#94a3b8' },
+      { icon: DollarSign, label: 'USD', color: '#22c55e' },
+      { icon: Euro, label: 'EUR', color: '#3b82f6' },
+      { icon: PoundSterling, label: 'GBP', color: '#a855f7' },
+    ]
+  },
+  food: {
+    label: 'Food',
+    icons: [
+      { icon: Utensils, label: 'Food', color: '#f97316' },
+      { icon: Pizza, label: 'Pizza', color: '#ef4444' },
+      { icon: Beer, label: 'Drink', color: '#eab308' },
+      { icon: Coffee, label: 'Coffee', color: '#78350f' },
+      { icon: Wine, label: 'Wine', color: '#be123c' },
+      { icon: Cake, label: 'Cake', color: '#ec4899' },
+      { icon: CupSoda, label: 'Soda', color: '#0ea5e9' },
+    ]
+  },
+  travel: {
+    label: 'Travel',
+    icons: [
+      { icon: Plane, label: 'Plane', color: '#3b82f6' },
+      { icon: Car, label: 'Car', color: '#ef4444' },
+      { icon: Bus, label: 'Bus', color: '#eab308' },
+      { icon: Train, label: 'Train', color: '#8b5cf6' },
+      { icon: Map, label: 'Map', color: '#10b981' },
+      { icon: Navigation, label: 'Nav', color: '#f59e0b' },
+    ]
+  },
+  general: {
+    label: 'General',
+    icons: [
+      { icon: Heart, label: 'Love', color: '#ec4899' },
+      { icon: Star, label: 'Star', color: '#eab308' },
+      { icon: Sparkles, label: 'Sparkle', color: '#06b6d4' },
+      { icon: Music, label: 'Music', color: '#f43f5e' },
+      { icon: PartyPopper, label: 'Party', color: '#d946ef' },
+      { icon: Zap, label: 'Zap', color: '#eab308' },
+      { icon: Crown, label: 'Crown', color: '#f59e0b' },
+      { icon: Bell, label: 'Bell', color: '#eab308' },
+      { icon: Gift, label: 'Gift', color: '#ef4444' },
+      { icon: Trophy, label: 'Trophy', color: '#eab308' },
+      { icon: ThumbsUp, label: 'Like', color: '#3b82f6' },
+      { icon: Camera, label: 'Camera', color: '#64748b' },
+      { icon: Video, label: 'Video', color: '#ef4444' },
+      { icon: Image, label: 'Image', color: '#10b981' },
+      { icon: Mic, label: 'Mic', color: '#f43f5e' },
+      { icon: Lock, label: 'Lock', color: '#64748b' },
+      { icon: Unlock, label: 'Unlock', color: '#10b981' },
+      { icon: Key, label: 'Key', color: '#eab308' },
+    ]
+  }
+};
 
 import { generateFramedCanvas, FrameType } from './utils/frameGenerator';
 
@@ -287,7 +401,8 @@ const QRCodeGenerator: React.FC = () => {
   const [frameColor, setFrameColor] = useState<string>('#000000'); // Default black frame
   
   // --- State for Logo ---
-  const [logoInputType, setLogoInputType] = useState<'upload' | 'url'>('upload');
+  const [logoInputType, setLogoInputType] = useState<'upload' | 'url' | 'preset'>('upload');
+  const [activePresetCategory, setActivePresetCategory] = useState<keyof typeof PRESET_ICONS>('social');
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [logoFile, setLogoFile] = useState<string | null>(null);
   const [logoUrlValid, setLogoUrlValid] = useState<boolean>(false);
@@ -451,6 +566,27 @@ END:VCARD`;
   }, [libLoaded, dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayAmount, promptpayIdType, qrColor, bgColor, isTransparent, dotStyle, cornerSquareStyle, cornerDotStyle, logoUrl, logoFile, logoUrlValid, generatePromptPayQR, currentError]);
 
   // --- Handlers ---
+  const handlePresetSelect = (iconObj: { icon: LucideIcon; color: string }) => {
+    const Icon = iconObj.icon;
+    const color = iconObj.color;
+    
+    // Create SVG string with specific color
+    const svgString = renderToStaticMarkup(
+      <Icon 
+        color={color} 
+        size={512} // High res
+        strokeWidth={1.5}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none" 
+      />
+    );
+    
+    const base64 = typeof window !== 'undefined' ? window.btoa(svgString) : '';
+    const dataUri = `data:image/svg+xml;base64,${base64}`;
+    
+    setLogoFile(dataUri); // Treat as uploaded file
+  };
+
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (file) {
@@ -888,72 +1024,7 @@ END:VCARD`;
               </div>
             </div>
 
-            {/* 3. Frames Selection */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
-              <div className="p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600">
-                    <Frame size={20} />
-                  </div>
-                  <h2 className="font-bold text-lg text-slate-700">เลือกกรอบ (Frame)</h2>
-                </div>
-
-                <div className="grid grid-cols-4 gap-2 mb-4">
-                  {[
-                    { id: 'none', label: 'None' },
-                    { id: 'border', label: 'Border' },
-                    { id: 'bottom-text', label: 'Bottom Text' },
-                    { id: 'top-bottom', label: 'Top & Bottom' },
-                  ].map((f) => (
-                     <button
-                        key={f.id}
-                        onClick={() => setFrameType(f.id as FrameType)}
-                        className={`flex flex-col items-center justify-center p-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer border-2 ${
-                            frameType === f.id
-                                ? 'bg-indigo-50 border-indigo-400 text-indigo-600'
-                                : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300'
-                        }`}
-                     >
-                        <div className="w-8 h-8 border-2 border-current rounded-lg mb-1 flex items-center justify-center">
-                            {f.id === 'none' && <span className="text-xs">🚫</span>}
-                            {f.id === 'border' && <div className="w-6 h-6 border border-current rounded-sm"></div>}
-                            {f.id === 'bottom-text' && <div className="flex flex-col items-center justify-end h-full pb-0.5"><div className="w-4 h-0.5 bg-current"></div></div>}
-                            {f.id === 'top-bottom' && <div className="flex flex-col items-center justify-between h-full py-0.5"><div className="w-4 h-0.5 bg-current"></div><div className="w-4 h-0.5 bg-current"></div></div>}
-                        </div>
-                        {f.label}
-                     </button>
-                  ))}
-                </div>
-
-                {frameType !== 'none' && (
-                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                        {frameType !== 'border' && (
-                             <InputWrapper label="ข้อความบนกรอบ" icon={CaseLower}>
-                                <input 
-                                    type="text" 
-                                    value={frameText} 
-                                    onChange={(e) => setFrameText(e.target.value)} 
-                                    maxLength={20}
-                                    className={inputClass(true)} 
-                                />
-                            </InputWrapper>
-                        )}
-                        
-                         <div className="flex items-center gap-2">
-                             <span className="text-xs font-bold text-slate-500 uppercase">สีกรอบ/ตัวหนังสือ</span>
-                             <div className="flex-1 h-px bg-slate-100"></div>
-                             <input 
-                                type="color" 
-                                value={frameColor} 
-                                onChange={(e) => setFrameColor(e.target.value)} 
-                                className="w-8 h-8 rounded-full cursor-pointer border-2 border-slate-200 p-0.5" 
-                             />
-                         </div>
-                    </div>
-                )}
-              </div>
-            </div>
-
+            
             {/* 4. Logo (Updated for better touch response) */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
                 <div className="p-5">
@@ -964,11 +1035,11 @@ END:VCARD`;
                         <h2 className="font-bold text-lg text-slate-700">ใส่โลโก้หน่อยมั้ย</h2>
                     </div>
                     
-                    {/* Toggle between Upload and URL */}
+                    {/* Toggle between Upload, URL, and Icons */}
                     <div className="flex bg-slate-50 p-1 rounded-xl mb-4">
                         <button
                             onClick={() => { setLogoInputType('upload'); setLogoUrl(''); }}
-                            className={`flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                            className={`flex-1 py-2 px-2 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
                                 logoInputType === 'upload'
                                     ? 'bg-white text-orange-500 shadow-sm'
                                     : 'text-slate-400 hover:text-slate-600'
@@ -979,7 +1050,7 @@ END:VCARD`;
                         </button>
                         <button
                             onClick={() => { setLogoInputType('url'); setLogoFile(null); }}
-                            className={`flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                            className={`flex-1 py-2 px-2 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
                                 logoInputType === 'url'
                                     ? 'bg-white text-orange-500 shadow-sm'
                                     : 'text-slate-400 hover:text-slate-600'
@@ -987,6 +1058,17 @@ END:VCARD`;
                         >
                             <LinkIcon size={14} />
                             URL
+                        </button>
+                        <button
+                            onClick={() => { setLogoInputType('preset'); setLogoFile(null); setLogoUrl(''); }}
+                            className={`flex-1 py-2 px-2 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                logoInputType === 'preset'
+                                    ? 'bg-white text-orange-500 shadow-sm'
+                                    : 'text-slate-400 hover:text-slate-600'
+                            }`}
+                        >
+                            <LayoutGrid size={14} />
+                            ไอคอน
                         </button>
                     </div>
                     
@@ -1079,8 +1161,121 @@ END:VCARD`;
                             )}
                         </div>
                     )}
+
+                       {/* Preset Icons Section */}
+                    {logoInputType === 'preset' && (
+                <div className="mt-4">
+                    {/* Categories */}
+                    <div className="flex overflow-x-auto gap-2 mb-4 pb-2 scrollbar-none">
+                        {(Object.keys(PRESET_ICONS) as Array<keyof typeof PRESET_ICONS>).map((key) => (
+                            <button
+                                key={key}
+                                onClick={() => setActivePresetCategory(key)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                                    activePresetCategory === key
+                                        ? 'bg-orange-100 text-orange-600'
+                                        : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                                }`}
+                            >
+                                {PRESET_ICONS[key].label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Icons Grid */}
+                    <div className="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto p-1 custom-scrollbar">
+                        {PRESET_ICONS[activePresetCategory].icons.map((item, index) => {
+                            const Icon = item.icon;
+                            return (
+                                <button
+                                    key={index}
+                                    onClick={() => handlePresetSelect(item)}
+                                    className="aspect-square flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 hover:bg-white hover:shadow-md border border-slate-100 hover:border-orange-100 transition-all group cursor-pointer"
+                                    title={item.label}
+                                >
+                                    <Icon 
+                                        size={24} 
+                                        color={item.color} 
+                                        className="mb-1 transition-transform group-hover:scale-110" 
+                                    />
+                                    {/* <span className="text-[9px] font-bold text-slate-400 group-hover:text-orange-400 truncate w-full text-center">{item.label}</span> */}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
                 </div>
             </div>
+
+
+            {/* 3. Frames Selection */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600">
+                    <Frame size={20} />
+                  </div>
+                  <h2 className="font-bold text-lg text-slate-700">เลือกกรอบ (Frame)</h2>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {[
+                    { id: 'none', label: 'None' },
+                    { id: 'border', label: 'Border' },
+                    { id: 'bottom-text', label: 'Bottom Text' },
+                    { id: 'top-bottom', label: 'Top & Bottom' },
+                  ].map((f) => (
+                     <button
+                        key={f.id}
+                        onClick={() => setFrameType(f.id as FrameType)}
+                        className={`flex flex-col items-center justify-center p-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer border-2 ${
+                            frameType === f.id
+                                ? 'bg-indigo-50 border-indigo-400 text-indigo-600'
+                                : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300'
+                        }`}
+                     >
+                        <div className="w-8 h-8 border-2 border-current rounded-lg mb-1 flex items-center justify-center">
+                            {f.id === 'none' && <span className="text-xs">🚫</span>}
+                            {f.id === 'border' && <div className="w-6 h-6 border border-current rounded-sm"></div>}
+                            {f.id === 'bottom-text' && <div className="flex flex-col items-center justify-end h-full pb-0.5"><div className="w-4 h-0.5 bg-current"></div></div>}
+                            {f.id === 'top-bottom' && <div className="flex flex-col items-center justify-between h-full py-0.5"><div className="w-4 h-0.5 bg-current"></div><div className="w-4 h-0.5 bg-current"></div></div>}
+                        </div>
+                        {f.label}
+                     </button>
+                  ))}
+                </div>
+
+                {frameType !== 'none' && (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {frameType !== 'border' && (
+                             <InputWrapper label="ข้อความบนกรอบ" icon={CaseLower}>
+                                <input 
+                                    type="text" 
+                                    value={frameText} 
+                                    onChange={(e) => setFrameText(e.target.value)} 
+                                    maxLength={20}
+                                    className={inputClass(true)} 
+                                />
+                            </InputWrapper>
+                        )}
+                        
+                         <div className="flex items-center gap-2">
+                             <span className="text-xs font-bold text-slate-500 uppercase">สีกรอบ/ตัวหนังสือ</span>
+                             <div className="flex-1 h-px bg-slate-100"></div>
+                             <input 
+                                type="color" 
+                                value={frameColor} 
+                                onChange={(e) => setFrameColor(e.target.value)} 
+                                className="w-8 h-8 rounded-full cursor-pointer border-2 border-slate-200 p-0.5" 
+                             />
+                         </div>
+                    </div>
+                )}
+              </div>
+            </div>
+
+         
 
           </div>
 
