@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, X, Trash2, FileText, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Upload, Trash2, FileText, RefreshCw, AlertTriangle } from 'lucide-react';
 import { upload } from '@vercel/blob/client';
 
 interface FileFormProps {
@@ -117,6 +117,7 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
               className={`file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 ${inputClass(true)} py-2`} 
               disabled={isUploading}
               accept="image/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/csv,application/rtf"
+              suppressHydrationWarning={true}
             />
           </div>
         </div>
@@ -124,7 +125,7 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
 
       {/* Progress Bar */}
       {isUploading && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-4">
             <div className="w-full bg-slate-200 rounded-full h-2.5">
             <div 
                 className="bg-teal-500 h-2.5 rounded-full transition-all duration-300" 
@@ -213,6 +214,7 @@ const FileForm: React.FC<FileFormProps> = ({ onUploadStart, onUploadComplete, on
             onChange={handleUpload}
             className="hidden"
             accept="image/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/csv,application/rtf"
+            suppressHydrationWarning={true}
           />
       )}
     </div>
