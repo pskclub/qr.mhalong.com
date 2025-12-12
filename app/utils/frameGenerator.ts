@@ -87,7 +87,7 @@ export const generateFramedCanvas = async (
   // Draw Text
   if (options.type !== 'border' && options.text) {
     ctx.fillStyle = options.textColor || '#000000';
-    ctx.font = `bold ${fontSize}px sans-serif`;
+    ctx.font = `bold ${fontSize}px "Noto Sans Thai", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
