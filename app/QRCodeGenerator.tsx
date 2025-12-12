@@ -24,6 +24,7 @@ import WifiForm from './components/qr/forms/WifiForm';
 import MessageForm from './components/qr/forms/MessageForm';
 import VCardForm from './components/qr/forms/VCardForm';
 import PromptPayForm from './components/qr/forms/PromptPayForm';
+import FileForm from './components/qr/forms/FileForm';
 
 // Settings
 import FrameSettings from './components/qr/settings/FrameSettings';
@@ -70,6 +71,9 @@ const QRCodeGenerator: React.FC = () => {
   const [promptpayId, setPromptpayId] = useState<string>('');
   const [promptpayAmount, setPromptpayAmount] = useState<string>('');
   const [promptpayIdType, setPromptpayIdType] = useState<'mobile' | 'citizen' | 'tax' | 'ewallet'>('mobile');
+
+  // File Upload
+  const [fileUrl, setFileUrl] = useState<string>('');
 
   // --- State for Styles ---
   const [size, setSize] = useState<number>(1000);
@@ -224,10 +228,12 @@ const QRCodeGenerator: React.FC = () => {
           if (cleaned.length === 0) validationError = 'กรุณากรอก e-Wallet ID';
         }
       }
+    } else if (dataType === 'file') {
+       if (!fileUrl) validationError = 'กรุณาอัปโหลดไฟล์';
     }
     
     return validationError;
-  }, [dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayIdType]);
+  }, [dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayIdType, fileUrl]);
 
 
   // Construct finalData
@@ -262,10 +268,14 @@ END:VCARD`;
         if (dataType === 'promptpay' && promptpayId) {
           data = generatePromptPayQR(promptpayId, promptpayAmount, promptpayIdType);
         }
+
+        if (dataType === 'file') {
+           data = fileUrl;
+        }
      }
      
      return data;
-  }, [dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayAmount, promptpayIdType, currentError]);
+  }, [dataType, content, wifiSsid, wifiPassword, wifiEncryption, smsPhone, smsMessage, vcardData, promptpayId, promptpayAmount, promptpayIdType, currentError, fileUrl]);
   
   // Updated focus ring to teal-400 and focus border to teal-400
   const inputClass = (hasIcon: boolean): string => `w-full ${hasIcon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 md:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-teal-400 focus:ring-4 focus:ring-teal-100 outline-none transition-all font-medium text-slate-600 text-sm placeholder:text-slate-300`;
@@ -335,6 +345,15 @@ END:VCARD`;
                         amount={promptpayAmount} setAmount={setPromptpayAmount}
                         type={promptpayIdType} setType={setPromptpayIdType}
                         inputClass={inputClass}
+                    />
+                  )}
+
+                  {dataType === 'file' && (
+                    <FileForm 
+                       onUploadStart={() => setFileUrl('')}
+                       onUploadComplete={(url) => setFileUrl(url)}
+                       onUploadError={(err) => alert(err)} // Simple alert for now
+                       inputClass={inputClass}
                     />
                   )}
 

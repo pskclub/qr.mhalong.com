@@ -10,6 +10,7 @@
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
+    "@vercel/blob": "^2.0.0",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
     "promptparse": "^1.5.0",

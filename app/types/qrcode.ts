@@ -13,7 +13,7 @@ export interface VCardData {
   country: string;
 }
 
-export type DataType = 'url' | 'text' | 'phone' | 'email' | 'wifi' | 'sms' | 'whatsapp' | 'vcard' | 'promptpay';
+export type DataType = 'url' | 'text' | 'phone' | 'email' | 'wifi' | 'sms' | 'whatsapp' | 'vcard' | 'promptpay' | 'file';
 export type FileExtension = 'png' | 'jpeg' | 'svg';
 export type DotStyle = 'rounded' | 'dots' | 'classy' | 'extra-rounded' | 'square' | 'classy-rounded';
 export type CornerSquareStyle = 'extra-rounded' | 'square' | 'dot';

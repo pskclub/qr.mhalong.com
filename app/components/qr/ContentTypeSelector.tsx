@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { DataType } from '../../types/qrcode';
-import { Link as LinkIcon, Type, Phone, Wifi, Mail, Contact, MessageSquare, Banknote } from 'lucide-react';
+import { Link as LinkIcon, Type, Phone, Wifi, Mail, Contact, MessageSquare, Banknote, FileText } from 'lucide-react';
 
 interface ContentTypeSelectorProps {
   dataType: DataType;
@@ -18,6 +18,7 @@ const ContentTypeSelector: React.FC<ContentTypeSelectorProps> = ({ dataType, set
     { id: 'vcard', icon: Contact, label: 'vCard' },
     { id: 'sms', icon: MessageSquare, label: 'SMS' },
     { id: 'promptpay', icon: Banknote, label: 'PromptPay' },
+    { id: 'file', icon: FileText, label: 'File' },
   ];
 
   return (
