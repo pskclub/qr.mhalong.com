@@ -644,7 +644,7 @@ END:VCARD`;
   };
 
   // Updated focus ring to teal-400 and focus border to teal-400
-  const inputClass = (hasIcon: boolean): string => `w-full ${hasIcon ? 'pl-10' : 'pl-4'} pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-teal-400 focus:ring-4 focus:ring-teal-100 outline-none transition-all font-medium text-slate-600 text-sm placeholder:text-slate-300`;
+  const inputClass = (hasIcon: boolean): string => `w-full ${hasIcon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 md:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-teal-400 focus:ring-4 focus:ring-teal-100 outline-none transition-all font-medium text-slate-600 text-sm placeholder:text-slate-300`;
 
   if (!libLoaded) {
     return (
@@ -661,8 +661,9 @@ END:VCARD`;
     // Updated background gradient to match Teal theme
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-emerald-100 font-sans text-slate-700 pb-12 selection:bg-teal-200">
       {/* Header */}
+      {/* Header */}
       <header className="bg-white/70 backdrop-blur-md border-b border-white/50 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Header Icon Gradient Updated */}
             <div className="w-10 h-10 bg-gradient-to-tr from-teal-400 to-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-teal-200 transform rotate-3 hover:rotate-6 transition-transform">
@@ -677,22 +678,22 @@ END:VCARD`;
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1 px-4 py-1.5 bg-white border border-teal-100 text-teal-600 rounded-full text-xs font-bold shadow-sm">
+            <span className="hidden md:inline-flex items-center gap-1 px-4 py-1.5 bg-white border border-teal-100 text-teal-600 rounded-full text-xs font-bold shadow-sm">
                ✨ Free
             </span>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
           
           {/* LEFT COLUMN: Settings */}
           <div className="lg:col-span-5 space-y-6">
             
             {/* 1. Content Type */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
-              <div className="p-5">
+              <div className="p-3 md:p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="p-2 bg-teal-100 rounded-xl text-teal-600">
                     <Settings size={20} />
@@ -714,7 +715,7 @@ END:VCARD`;
                     <button
                       key={t.id}
                       onClick={() => setDataType(t.id as DataType)}
-                      className={`flex flex-col items-center justify-center p-3 rounded-2xl text-[10px] font-bold transition-all duration-200 cursor-pointer ${
+                      className={`flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl text-[10px] font-bold transition-all duration-200 cursor-pointer ${
                         dataType === t.id 
                           // Updated Active State Gradient
                           ? 'bg-gradient-to-b from-teal-400 to-teal-500 text-white shadow-lg shadow-teal-200 transform scale-105' 
@@ -727,7 +728,7 @@ END:VCARD`;
                   ))}
                 </div>
 
-                <div className="mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
+                <div className="mt-6 bg-slate-50 p-2.5 md:p-4 rounded-2xl border border-slate-100 space-y-4">
                   
                   {/* URL */}
                   {dataType === 'url' && (
@@ -922,7 +923,7 @@ END:VCARD`;
 
             {/* 2. Colors & Styles */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
-              <div className="p-5 space-y-6">
+              <div className="p-3 md:p-5 space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
                     <Palette size={20} />
@@ -1027,7 +1028,7 @@ END:VCARD`;
             
             {/* 4. Logo (Updated for better touch response) */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
-                <div className="p-5">
+                <div className="p-3 md:p-5">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="p-2 bg-orange-100 rounded-xl text-orange-500">
                             <ImageIcon size={20} />
@@ -1211,7 +1212,7 @@ END:VCARD`;
 
             {/* 3. Frames Selection */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
-              <div className="p-5">
+              <div className="p-3 md:p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600">
                     <Frame size={20} />
@@ -1289,7 +1290,7 @@ END:VCARD`;
                 <div className="absolute top-0 right-0 w-64 h-64 bg-teal-200 rounded-full blur-3xl opacity-20 -mr-20 -mt-20 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-20 -ml-20 -mb-20 pointer-events-none"></div>
 
-                <div className="relative p-8 flex flex-col items-center">
+                <div className="relative p-4 md:p-8 flex flex-col items-center">
                   <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-900/5 rounded-full mb-6">
                     <Maximize size={14} className="text-slate-500" />
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Live Preview</span>
@@ -1332,8 +1333,8 @@ END:VCARD`;
                 </div>
 
                 {/* Download Area */}
-                <div className="bg-slate-50/80 p-6 border-t border-slate-100 backdrop-blur-sm">
-                  <div className="flex flex-col sm:flex-row items-end gap-4">
+                <div className="bg-slate-50/80 p-4 md:p-6 border-t border-slate-100 backdrop-blur-sm">
+                  <div className="flex flex-col md:flex-row items-end gap-4">
                     
                     <div className="flex-1 w-full space-y-4">
                         <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-100">
@@ -1355,7 +1356,7 @@ END:VCARD`;
                     <button 
                         onClick={handleDownload}
                         // Updated Button Gradient
-                        className="w-full sm:w-auto shrink-0 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-teal-200 transform hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full md:w-auto shrink-0 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-teal-200 transform hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <Download size={20} />
                         <span>Download</span>
