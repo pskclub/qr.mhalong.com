@@ -25,8 +25,12 @@ import {
   Building2,
   Globe,
   Banknote,
-  LucideIcon
+  LucideIcon,
+  Frame, // Import Frame icon
+  CaseLower // Import icon for text
 } from 'lucide-react';
+
+import { generateFramedCanvas, FrameType } from './utils/frameGenerator';
 
 // TypeScript interfaces and types
 interface VCardData {
@@ -277,6 +281,11 @@ const QRCodeGenerator: React.FC = () => {
   const [cornerSquareStyle, setCornerSquareStyle] = useState<CornerSquareStyle>('extra-rounded'); 
   const [cornerDotStyle, setCornerDotStyle] = useState<CornerDotStyle>('dot'); 
 
+  // --- State for Frames ---
+  const [frameType, setFrameType] = useState<FrameType>('none');
+  const [frameText, setFrameText] = useState<string>('SCAN ME');
+  const [frameColor, setFrameColor] = useState<string>('#000000'); // Default black frame
+  
   // --- State for Logo ---
   const [logoInputType, setLogoInputType] = useState<'upload' | 'url'>('upload');
   const [logoUrl, setLogoUrl] = useState<string>('');
@@ -453,16 +462,44 @@ END:VCARD`;
     }
   };
 
-  const handleDownload = (): void => {
-    if (qrCodeInstance.current) {
+  const handleDownload = async (): Promise<void> => {
+    if (qrCodeInstance.current && refContainer.current) {
+      // 1. Update QR to high res for download
       qrCodeInstance.current.update({
         width: Number(size),
         height: Number(size)
       });
-      qrCodeInstance.current.download({
-        name: `qr-${dataType} from qr.mhalong.com`,
-        extension: fileExt
-      });
+      
+      // 2. Initial delay to ensure render
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // 3. Get the raw QR canvas
+      const qrCanvas = refContainer.current.querySelector('canvas');
+      if (qrCanvas) {
+        let finalCanvas = qrCanvas;
+
+        // 4. Apply Frame if selected
+        if (frameType !== 'none') {
+            finalCanvas = await generateFramedCanvas(qrCanvas, {
+                type: frameType,
+                text: frameText,
+                color: frameColor,
+                bgColor: isTransparent ? '#ffffff' : bgColor, // Frames usually need solid background if transparent
+                textColor: frameColor
+            });
+        }
+
+        // 5. Download logic
+        const url = finalCanvas.toDataURL(`image/${fileExt}`);
+        const link = document.createElement('a');
+        link.download = `qr-${dataType}.${fileExt}`;
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // 6. Reset QR size for preview
       qrCodeInstance.current.update({
         width: 600,
         height: 600
@@ -851,7 +888,73 @@ END:VCARD`;
               </div>
             </div>
 
-            {/* 3. Logo (Updated for better touch response) */}
+            {/* 3. Frames Selection */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600">
+                    <Frame size={20} />
+                  </div>
+                  <h2 className="font-bold text-lg text-slate-700">เลือกกรอบ (Frame)</h2>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {[
+                    { id: 'none', label: 'None' },
+                    { id: 'border', label: 'Border' },
+                    { id: 'bottom-text', label: 'Bottom Text' },
+                    { id: 'top-bottom', label: 'Top & Bottom' },
+                  ].map((f) => (
+                     <button
+                        key={f.id}
+                        onClick={() => setFrameType(f.id as FrameType)}
+                        className={`flex flex-col items-center justify-center p-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer border-2 ${
+                            frameType === f.id
+                                ? 'bg-indigo-50 border-indigo-400 text-indigo-600'
+                                : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300'
+                        }`}
+                     >
+                        <div className="w-8 h-8 border-2 border-current rounded-lg mb-1 flex items-center justify-center">
+                            {f.id === 'none' && <span className="text-xs">🚫</span>}
+                            {f.id === 'border' && <div className="w-6 h-6 border border-current rounded-sm"></div>}
+                            {f.id === 'bottom-text' && <div className="flex flex-col items-center justify-end h-full pb-0.5"><div className="w-4 h-0.5 bg-current"></div></div>}
+                            {f.id === 'top-bottom' && <div className="flex flex-col items-center justify-between h-full py-0.5"><div className="w-4 h-0.5 bg-current"></div><div className="w-4 h-0.5 bg-current"></div></div>}
+                        </div>
+                        {f.label}
+                     </button>
+                  ))}
+                </div>
+
+                {frameType !== 'none' && (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {frameType !== 'border' && (
+                             <InputWrapper label="ข้อความบนกรอบ" icon={CaseLower}>
+                                <input 
+                                    type="text" 
+                                    value={frameText} 
+                                    onChange={(e) => setFrameText(e.target.value)} 
+                                    maxLength={20}
+                                    className={inputClass(true)} 
+                                />
+                            </InputWrapper>
+                        )}
+                        
+                         <div className="flex items-center gap-2">
+                             <span className="text-xs font-bold text-slate-500 uppercase">สีกรอบ/ตัวหนังสือ</span>
+                             <div className="flex-1 h-px bg-slate-100"></div>
+                             <input 
+                                type="color" 
+                                value={frameColor} 
+                                onChange={(e) => setFrameColor(e.target.value)} 
+                                className="w-8 h-8 rounded-full cursor-pointer border-2 border-slate-200 p-0.5" 
+                             />
+                         </div>
+                    </div>
+                )}
+              </div>
+            </div>
+
+            {/* 4. Logo (Updated for better touch response) */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-1 shadow-xl shadow-teal-500/5 border border-white">
                 <div className="p-5">
                     <div className="flex items-center gap-2 mb-4">
@@ -997,17 +1100,39 @@ END:VCARD`;
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Live Preview</span>
                   </div>
 
-                  {/* QR Canvas Container */}
-                  <div className="relative group">
+                  {/* QR Canvas Container with Frame Preview */}
+                  <div className="relative group transition-all duration-300 flex flex-col items-center"
+                       style={{
+                            backgroundColor: frameType === 'none' ? 'transparent' : (isTransparent ? '#ffffff' : bgColor), // Frame bg
+                            border: (frameType === 'border' || frameType === 'bottom-text' || frameType === 'top-bottom') ? `15px solid ${frameColor}` : 'none',
+                            borderRadius: frameType !== 'none' ? '24px' : '0',
+                            padding: frameType === 'none' ? '0' : '20px',
+                       }}
+                  >
+                     {/* Text for Top Frame */}
+                     {frameType === 'top-bottom' && (
+                        <div className="w-full text-center pb-4 font-bold text-xl z-10" style={{ color: frameColor }}>
+                            {frameText}
+                        </div>
+                     )}
+
                     {/* Background blob updated */}
-                    <div className="absolute -inset-1 bg-gradient-to-tr from-teal-500 via-emerald-500 to-cyan-500 rounded-3xl opacity-30 blur group-hover:opacity-60 transition duration-500"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-tr from-teal-500 via-emerald-500 to-cyan-500 rounded-3xl opacity-30 blur group-hover:opacity-60 transition duration-500 -z-10"></div>
+                    
                     <div 
                         ref={refContainer} 
-                        className="relative bg-white p-6 rounded-2xl shadow-xl overflow-hidden [&_canvas]:max-w-full [&_canvas]:h-auto"
+                        className="relative bg-white p-6 rounded-2xl shadow-xl overflow-hidden [&_canvas]:max-w-full [&_canvas]:h-auto flex items-center justify-center"
                         style={{ backgroundColor: isTransparent ? 'transparent' : bgColor }}
                     >
                         {/* Canvas renders here */}
                     </div>
+
+                     {/* Text for Bottom/Top-Bottom Frame */}
+                     {(frameType === 'bottom-text' || frameType === 'top-bottom') && (
+                        <div className="w-full text-center pt-4 font-bold text-xl z-10" style={{ color: frameColor }}>
+                            {frameText}
+                        </div>
+                     )}
                   </div>
                 </div>
 
