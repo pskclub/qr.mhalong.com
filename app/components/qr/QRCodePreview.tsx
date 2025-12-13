@@ -263,11 +263,34 @@ const QRCodePreview: React.FC<QRCodePreviewProps> = ({
       </div>
 
       {/* Tips */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white text-xs text-slate-500 flex items-start gap-3 shadow-sm">
+      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white text-xs text-slate-500 flex items-start gap-3 shadow-sm mb-6">
         <div className="p-1.5 bg-yellow-100 rounded-lg text-yellow-600 shrink-0">
             <Sparkles size={14} />
         </div>
         <p className="mt-1 font-medium">ทิปส์: ถ้าใส่รูปโลโก้ อย่าลืมเลือกสี QR Code ให้เข้มกว่าพื้นหลังนะ ไม่งั้นสแกนยาก!</p>
+      </div>
+
+      {/* Raw Data Display */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 shadow-lg border border-white space-y-3">
+        <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+            <span>QR Code Data</span>
+            <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Scanned Content</span>
+        </h3>
+        <div className="relative group">
+            <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 font-mono break-all max-h-32 overflow-y-auto">
+                {finalData}
+            </div>
+            <button 
+                onClick={() => {
+                    navigator.clipboard.writeText(finalData);
+                    // Could add a toast/tooltip here for feedback
+                }}
+                className="absolute top-2 right-2 p-1.5 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-teal-600 hover:border-teal-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                title="Copy to clipboard"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            </button>
+        </div>
       </div>
 
     </div>

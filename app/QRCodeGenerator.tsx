@@ -30,6 +30,11 @@ import FileForm from './components/qr/forms/FileForm';
 import FrameSettings from './components/qr/settings/FrameSettings';
 import ColorSettings from './components/qr/settings/ColorSettings';
 import LogoSettings from './components/qr/settings/LogoSettings';
+import HistorySection from './components/qr/HistorySection';
+
+// Hooks
+import { useQRHistory, QRHistoryItem } from './hooks/useQRHistory';
+import { Save } from 'lucide-react';
 
 // Utils
 import { generatePromptPayQR } from './utils/promptpay';
@@ -99,6 +104,83 @@ const QRCodeGenerator: React.FC = () => {
   const [logoUrlValid, setLogoUrlValid] = useState<boolean>(false);
   const [logoUrlLoading, setLogoUrlLoading] = useState<boolean>(false);
   const [logoUrlError, setLogoUrlError] = useState<string>('');
+
+  // --- History Hook ---
+  const historyHook = useQRHistory();
+  const { addToHistory } = historyHook;
+
+  const handleSaveToHistory = () => {
+    // Generate a smart name based on content
+    let name = 'QR Code';
+    if (dataType === 'url') name = content || 'URL';
+    else if (dataType === 'text') name = content ? (content.length > 20 ? content.substring(0, 20) + '...' : content) : 'Text';
+    else if (dataType === 'phone') name = content || 'Phone';
+    else if (dataType === 'email') name = content || 'Email';
+    else if (dataType === 'wifi') name = `WiFi: ${wifiSsid}`;
+    else if (dataType === 'vcard') name = `Contact: ${vcardData.firstName} ${vcardData.lastName}`;
+    else if (dataType === 'promptpay') name = `PromptPay: ${promptpayId}`;
+    else name = dataType.toUpperCase();
+
+    addToHistory({
+      name,
+      dataType,
+      content,
+      wifiSsid,
+      wifiPassword,
+      wifiEncryption,
+      smsPhone,
+      smsMessage,
+      vcardData,
+      promptpayId,
+      promptpayAmount,
+      promptpayIdType,
+      fileUrl,
+      qrColor,
+      bgColor,
+      isTransparent,
+      dotStyle,
+      cornerSquareStyle,
+      cornerDotStyle,
+      frameType,
+      frameText,
+      frameColor,
+      logoInputType,
+      activePresetCategory,
+      logoUrl,
+    });
+  };
+
+  const handleRestoreFromHistory = (item: QRHistoryItem) => {
+    setDataType(item.dataType);
+    setContent(item.content || '');
+    if (item.wifiSsid) setWifiSsid(item.wifiSsid);
+    if (item.wifiPassword) setWifiPassword(item.wifiPassword);
+    if (item.wifiEncryption) setWifiEncryption(item.wifiEncryption || 'WPA');
+    if (item.smsPhone) setSmsPhone(item.smsPhone);
+    if (item.smsMessage) setSmsMessage(item.smsMessage);
+    if (item.vcardData) setVcardData(item.vcardData);
+    if (item.promptpayId) setPromptpayId(item.promptpayId);
+    if (item.promptpayAmount) setPromptpayAmount(item.promptpayAmount);
+    if (item.promptpayIdType) setPromptpayIdType(item.promptpayIdType);
+    if (item.fileUrl) setFileUrl(item.fileUrl);
+
+    setQrColor(item.qrColor);
+    setBgColor(item.bgColor);
+    setIsTransparent(item.isTransparent);
+    setDotStyle(item.dotStyle);
+    setCornerSquareStyle(item.cornerSquareStyle);
+    setCornerDotStyle(item.cornerDotStyle);
+
+    setFrameType(item.frameType);
+    setFrameText(item.frameText);
+    setFrameColor(item.frameColor);
+
+    setLogoInputType(item.logoInputType);
+    setActivePresetCategory(item.activePresetCategory);
+    setLogoUrl(item.logoUrl);
+    // Note: We don't restore logoFile (File object) as it wasn't saved.
+    // User might need to re-upload if they used a local file not represented by URL.
+  };
 
   // --- Validate Logo URL ---
   useEffect(() => {
@@ -400,6 +482,22 @@ END:VCARD`;
                 frameColor={frameColor} setFrameColor={setFrameColor}
                 inputClass={inputClass}
             />
+
+            {/* Save & History */}
+            <div className="flex flex-col gap-4">
+               <button 
+                  onClick={handleSaveToHistory}
+                  className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl font-bold text-lg shadow-lg shadow-teal-200 transition-all flex items-center justify-center gap-2"
+               >
+                  <Save size={20} />
+                  <span>บันทึกประวัติ / Save History</span>
+               </button>
+
+               <HistorySection 
+                  currentHistory={historyHook}
+                  onRestore={handleRestoreFromHistory}
+               />
+            </div>
 
           </div>
 
